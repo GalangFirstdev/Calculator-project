@@ -1,101 +1,96 @@
 const calculator = {
-    displaynumber : '0',
-    operator : null,
-    firstnumber : null,
-    waitingforsecondnumber : false,
-}
+  displaynumber: "0",
+  operator: null,
+  firstnumber: null,
+  waitingforsecondnumber: false,
+};
 
 function updateDisplay() {
-    document.querySelector('#displaynumber').innerText = calculator.displaynumber;
+  document.querySelector("#displaynumber").innerText = calculator.displaynumber;
 }
 
-function  clearCalculator() {
-    calculator.displaynumber = '0';
-    calculator.operator = null;
-    calculator.firstnumber = null;
+function clearCalculator() {
+  calculator.displaynumber = "0";
+  calculator.operator = null;
+  calculator.firstnumber = null;
+  calculator.waitingforsecondnumber = false;
+}
+
+function inputDigit(digit) {
+  if (calculator.displaynumber === "0") {
+    calculator.displaynumber = digit;
+  } else {
+    calculator.displaynumber += digit;
+  }
+}
+
+function inverseNumber() {
+  if (calculator.displaynumber === "0") {
+    return;
+  }
+  calculator.displaynumber = calculator.displaynumber * -1;
+}
+
+function handleOperator(operator) {
+  if (!calculator.waitingforsecondnumber) {
+    calculator.operator = operator;
     calculator.waitingforsecondnumber = false;
+    calculator.firstnumber = calculator.displaynumber;
+
+    calculator.displaynumber = "0";
+  } else {
+    alert("operator sudah di gunakan");
+  }
 }
 
-function  inputDigit(digit) {
-    if(calculator.displaynumber === '0'){
-        calculator.displaynumber = digit;
-    }else {
-        calculator.displaynumber += digit;
+function performCalculation() {
+  if (calculator.firstnumber == null || calculator.operator == null) {
+    alert("anda belum  menetapkan operator");
+    return;
+  }
 
-    }
+  let result = 0;
+  // penghitungan
+  const displaynumber = parseInt(calculator.displaynumber);
+  const firstnumber = parseInt(calculator.firstnumber);
+
+  if (calculator.operator === "+") {
+    result = displaynumber + firstnumber;
+  } else if (calculator.operator === "-") {
+    result = displaynumber - firstnumber;
+  } else if (calculator.operator === "*") {
+    result = displaynumber * firstnumber;
+  }
+  calculator.displaynumber = result;
 }
 
-function inverseNumber () {
-    if (calculator.displaynumber === '0') {
-        return;
+const buttons = document.querySelectorAll(".button");
+
+for (const button of buttons) {
+  button.addEventListener("click", function (event) {
+    const target = event.target;
+
+    if (target.classList.contains("clear")) {
+      clearCalculator();
+      updateDisplay();
+      return;
     }
-    calculator.displaynumber = calculator.displaynumber * -1;
-}
-
-function handleOperator (operator) {
-    if (!calculator.waitingforsecondnumber) {
-        calculator.operator = operator;
-        calculator.waitingforsecondnumber = true;
-        calculator.firstnumber = calculator.displaynumber;
-
-        calculator.displaynumber = '0';
-
-    } else {
-        alert('operator sudah di gunakan');
+    if (target.classList.contains("negative")) {
+      inverseNumber();
+      updateDisplay();
+      return;
     }
-
-}
-
-function  performCalculation() {
-    if (calculator.firstnumber == null || calculator.operator == null) {
-        alert ('anda belum  menetapkan operator');
-        return;
+    if (target.classList.contains("equals")) {
+      performCalculation();
+      updateDisplay();
+      return;
     }
-
-    let result = 0;
-    if (calculator.operator === '+') {
-        result = parseInt(calculator.firstnumber) + parseInt(calculator.displaynumber);
-
-    } else {
-        result = parseInt(calculator.firstnumber) - parseInt(calculator.displaynumber);
-
+    if (target.classList.contains("operator")) {
+      handleOperator(target.innerText);
+      return;
     }
 
-    calculator.displaynumber = result;
-}
-
-
-
-
-const buttons = document.querySelectorAll('.button') 
-
-for(const button of buttons) {
-    button.addEventListener('click' , function (event){
-        const target = event.target;
-
-
-        if(target.classList.contains('clear')){
-            clearCalculator();
-            updateDisplay();
-            return;
-        }
-        if(target.classList.contains('negative')){
-            inverseNumber();
-            updateDisplay();
-            return;
-        }
-        if(target.classList.contains('equals')) {
-            performCalculation();
-            updateDisplay();
-            return;
-        }
-        if (target.classList.contains('operator')) {
-            handleOperator(target.innerText);
-            return;
-        }
-
-
-        inputDigit(target.innerText);
-        updateDisplay();
-    })
+    inputDigit(target.innerText);
+    updateDisplay();
+  });
 }
